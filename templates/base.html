@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Timeghost</title>
+  <link rel="stylesheet" href="/css/timeghost.css">
+  {% block header_block %}{% endblock %}
+</head>
+
+
+<body>
+  <div class="container">
+
+    <header>
+      <a href="/"><h1>Timeghost</h1></a>
+      {% block headline_block %}{% endblock %}
+    </header>
+
+    <main>
+      {% block main_block %}{% endblock %}
+    </main>
+
+    <aside>
+      <a href="/"><img src="/img/timeghost.png"/></a>
+      <br>
+      {% block sidebar_block %}{% endblock %}
+
+      {% if request.path != "/raves" %}
+        <hr>Read <a href="/raves">testimonials</a> from our beloved users.
+      {% endif %}
+    </aside>
+
+    <footer>
+      <div>
+        The word "Timeghost" and the Timeghost image are created by 
+        <a href="https://bsky.app/profile/xkcd.com">Randall Munroe</a>,
+        author of <a href="https://xkcd.com/1393/">XKCD</a>.
+      </div>
+
+      <div>
+        Site by <a href="https://bsky.app/profile/kesterallen.bsky.social">Kester Allen</a>.
+      </div>
+    </footer>
+
+  </div>
+</body>
+
+
+</html>
+

@@ -1,0 +1,174 @@
+/* Reset and Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font: 1.1em 'Barlow', sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background-color: #efefef;
+}
+
+a {
+  text-decoration: none;
+  color: #0000F8;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+a:active {
+  color: black;
+}
+
+/* Container */
+.container {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-areas:
+    "header"
+    "main"
+    "sidebar"
+    "footer";
+  min-height: 100vh;
+  max-width: 1400px;
+  margin: 0 auto;
+  background-color: #efefef;
+}
+
+/* Header */
+header {
+  grid-area: header;
+  background-color: #fff;
+  color: #fff;
+  padding: 1.5rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /*box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);*/
+}
+
+header h1 {
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+/* Sidebar */
+aside {
+  grid-area: sidebar;
+  background-color: #d6dbff;
+  padding: 1.5rem;
+  border-left: 1px solid #ddd;
+}
+
+aside h2 {
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  color: #2c3e50;
+}
+
+aside ul {
+  list-style: none;
+}
+
+aside ul li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #ddd;
+}
+
+aside ul li:last-child {
+  border-bottom: none;
+}
+
+/* Main Content */
+main {
+  grid-area: main;
+  padding: 2rem;
+  background-color: #efefef;
+}
+
+main h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  color: #2c3e50;
+}
+
+main p {
+  margin-bottom: 1rem;
+  color: #555;
+}
+
+/* Footer */
+footer {
+  grid-area: footer;
+  background-color: #fff;
+  color: #2c3e50;
+  padding: 1.5rem 2rem;
+  text-align: center;
+}
+
+footer p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* Tablet Styles (768px and up) */
+@media (min-width: 768px) {
+  .container {
+    grid-template-columns: 1fr 250px;
+    grid-template-areas:
+      "header header"
+      "main sidebar"
+      "footer footer";
+  }
+
+  header h1 {
+    font-size: 2rem;
+  }
+
+  main {
+    padding: 2.5rem;
+  }
+}
+
+/* Desktop Styles (1024px and up) */
+@media (min-width: 1024px) {
+  .container {
+    grid-template-columns: 1fr 300px;
+  }
+
+  header {
+    padding: 2rem 3rem;
+  }
+
+  header h1 {
+    font-size: 2.2rem;
+  }
+
+  aside {
+    padding: 2rem;
+  }
+
+  main {
+    padding: 3rem;
+  }
+
+  main h2 {
+    font-size: 2rem;
+  }
+
+  footer {
+    padding: 2rem 3rem;
+  }
+}
+
+/* Large Desktop Styles (1440px and up) */
+@media (min-width: 1440px) {
+  .container {
+    grid-template-columns: 1fr 350px;
+  }
+}
