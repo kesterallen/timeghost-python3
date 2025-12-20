@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block main_block %}
+  <form action="/pick" method="post">
+    <select name="event1" id="event1">
+      {% for event in events %}
+        <option value="{{event.url}}">{{event.description}}</option>
+      {% endfor %}
+    </select>
+
+    <select name="event2" id="event2">
+      {% for event in events %}
+        <option value="{{event.url}}">{{event.description}}</option>
+      {% endfor %}
+    </select>
+
+    <input type="submit" value="Make Timeghost"/>
+  </form>
+{% endblock %}
+
+{% block sidebar_block %}
+  {{data}}
+  <hr>
+  {{data.event1}}
+  <hr>
+  {{data.event2}}
+{% endblock %}
+
