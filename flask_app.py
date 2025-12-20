@@ -122,8 +122,8 @@ class Timeghost:
         return (
             f"The {self.middle} is closer ({self.first_gap_years:.1f} years) to "
             f"the {self.first} ({self.last_gap_years:.1f} years) than "
-            f"{last}."
-            # f"{self.is_valid()}, {self.tries} <br>
+            f"{last} "
+            f"({self.is_valid()}, {self.tries} tries). "
         )
 
     @staticmethod
@@ -189,11 +189,12 @@ class Timeghost:
                 events.remove(middle)
             try:
                 if is_now:
+                    first = None
                     last = Event.now()
-                    timeghost = Timeghost._make(events, middle=middle, last=last)
                 else:
                     first = Timeghost._event_before(middle, events)
-                    timeghost = Timeghost._make(events, first=first, middle=middle)
+                    last = None
+                timeghost = Timeghost._make(events, first, middle, last)
 
                 timeghost.tries = i + 1
                 return timeghost
@@ -231,7 +232,7 @@ def load_specific_events(urls: list[str]) -> list[Event]:
 
 
 def load_events_and_make_timeghost(is_random=False, middle=None, is_now=True):
-    """'presentation layer' method, should be replace by templates"""
+    """ Make a timeghost from the list of events """
     events = load_events()
     try:
         tg = Timeghost.make(events, middle, is_now, is_random)
@@ -324,3 +325,12 @@ def raves():
 @app.route("/")
 def display_timeghost_default():
     return display_timeghost_random_optimized()
+
+# TODO
+#
+#  <form action="/test" method="POST">
+#    <!-- TODO: try https://pikaday.dbushell.com/ -->
+#    <input id="datetime-input" name="datetime-input" type="datetime-local">
+#    <input type="text" name="description" placeholder="Something happened"/>
+#    <button class="button" type="submit" name="add">Add Event</button>
+#  </form>
