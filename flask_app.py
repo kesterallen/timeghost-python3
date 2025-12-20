@@ -205,7 +205,7 @@ class Timeghost:
 def load_events():
     """Load the database of available events"""
     # TODO GET the csv from /static/events?
-    csv_file_path = Path(app.root_path) / "assets/events_timeghost.csv"
+    csv_file_path = Path(app.root_path) / "static/events_timeghost.csv"
     with open(csv_file_path) as csvfile:
         reader = csv.DictReader(csvfile)
         events = []
@@ -240,7 +240,11 @@ def load_events_and_make_timeghost(is_random=False, middle=None, is_now=True):
         return f"Can't make timeghost {e}"
 
 
-app = Flask(__name__, template_folder=Path(__file__).resolve().parent / "templates/")
+app = Flask(
+    __name__,
+    template_folder=Path(__file__).resolve().parent / "templates/",
+    static_url_path="/static",
+)
 
 
 @app.route("/worst/random")
