@@ -14,15 +14,12 @@
       {% endfor %}
     </select>
 
+    <input name="event-date" id="event-date" type="datetime-local">
+
     <input type="submit" value="Make Timeghost"/>
   </form>
 {% endblock %}
 
 {% block sidebar_block %}
-  {{data}}
-  <hr>
-  {{data.event1}}
-  <hr>
-  {{data.event2}}
 {% endblock %}
 

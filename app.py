@@ -118,11 +118,18 @@ class Timeghost:
 
     @property
     def verbose_factoid(self) -> str:
-        last = "today" if self.last.description == NOW_MARKER else f"the {self.last}"
+        if self.last.description == NOW_MARKER:
+            last = "today"
+            last_date = dt.datetime.now(tz.tzlocal())
+        else:
+            last = f"the {self.last}"
+            last_date = self.last.date
+
         return (
-            f"The {self.middle} is closer ({self.first_gap_years:.1f} years) to "
-            f"the {self.first} ({self.last_gap_years:.1f} years) than "
-            f"{last} "
+            f"The {self.middle} ({self.middle.date}) "
+            f"is closer ({self.first_gap_years:.1f} years) to "
+            f"the {self.first} ({self.first.date}) ({self.last_gap_years:.1f} years) than "
+            f"{last} ({last_date}) "
             f"({self.is_valid()}, {self.tries} tries). "
         )
 
@@ -174,7 +181,7 @@ class Timeghost:
     @staticmethod
     def make(events, middle, is_now, is_random):
         """
-        Make a random timeghost with optional specified middle event
+        Make a timeghost with optional specified middle event
         If middle is not specified, pick a random middle event
         """
         if is_random:
@@ -250,11 +257,16 @@ app = Flask(
 @app.route("/pick", methods=["GET", "POST"])
 def pick():
     """ pick a timeghost """
-    if request.method == 'POST':
-        data = request.get_data()
-        return render_template("pick.html", data=data)
+    if request.method == "POST":
+        url1 = request.form["event1"]
+        url2 = request.form["event2"]
+        print(request.form)
+        event1, event2 = load_specific_events([url1, url2])
+        
+        tg = Timeghost(event1, event2, Event.now(), check=False)
+        return render_template("timeghost.html", timeghost=tg)
 
-    if request.method == 'GET':
+    if request.method == "GET":
         return render_template("pick.html", events=load_events())
 
 
