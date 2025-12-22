@@ -120,9 +120,9 @@ footer p {
 
 
 .button-link {
-  background-color: #008CBA; /* blue */
-  border: none; /* Remove default border */
   color: white; /* White text */
+  background-color: #008CBA; /* light blue */
+  border: none; /* Remove default border */
   padding: 8px 16px; /* Add space around the text */
   text-align: center; /* Center the text */
   text-decoration: none; /* Remove default underline */
@@ -135,6 +135,7 @@ footer p {
 
 /* Add hover effect for interactivity */
 .button-link:hover {
+  color: white; /* White text */
   background-color: #0000ff;
 }
 
