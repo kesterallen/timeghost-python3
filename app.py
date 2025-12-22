@@ -256,18 +256,23 @@ app = Flask(
 
 @app.route("/pick", methods=["GET", "POST"])
 def pick():
-    """ pick a timeghost """
-    if request.method == "POST":
-        url1 = request.form["event1"]
-        url2 = request.form["event2"]
-        print(request.form)
-        event1, event2 = load_specific_events([url1, url2])
-        
-        tg = Timeghost(event1, event2, Event.now(), check=False)
-        return render_template("timeghost.html", timeghost=tg)
+    """ Pick a timeghost, or render a picked timeghost """
 
+    # pick a timeghost
     if request.method == "GET":
-        return render_template("pick.html", events=load_events())
+        events = load_events()
+        events.sort(reverse=True)
+        return render_template("pick.html", events=events)
+
+    # render a picked timeghost
+    if request.method == "POST":
+        url1 = request.form["event_first"]
+        url2 = request.form["event_middle"]
+        print(request.form)
+        first, middle = load_specific_events([url1, url2])
+        
+        tg = Timeghost(first, middle, Event.now(), check=False)
+        return render_template("timeghost.html", timeghost=tg)
 
 
 @app.route("/raves")

@@ -2,15 +2,15 @@
 
 {% block main_block %}
   <form action="/pick" method="post">
-    <select name="event1" id="event1">
+    <select name="event_first" id="event_first">
       {% for event in events %}
-        <option value="{{event.url}}">{{event.description}}</option>
+        <option value="{{event.url}}" data-date="{{event.date}}">{{event.description}} ({{event.date}})</option>
       {% endfor %}
     </select>
 
-    <select name="event2" id="event2">
+    <select name="event_middle" id="event_middle">
       {% for event in events %}
-        <option value="{{event.url}}">{{event.description}}</option>
+        <option value="{{event.url}}" data-date="{{event.date}}">{{event.description}} ({{event.date}})</option>
       {% endfor %}
     </select>
 
@@ -21,5 +21,23 @@
 {% endblock %}
 
 {% block sidebar_block %}
+{% endblock %}
+
+<!-- Filter invalid events in event2 when event1 is selected -->
+{% block bottom_block %}
+  <script>
+    const eventFirst = document.querySelector("#event_first");
+    const eventMiddle = document.querySelector("#event_middle");
+
+    eventFirst.addEventListener("change", (event) => {
+      // Filter invalid events in second event select when an the first event is selected
+      Array.from(eventMiddle.options).forEach(option => {
+        if (option.dataset.date > eventFirst.selectedOptions[0].dataset.date) {
+          option.disabled = true;
+        }
+      });
+
+    });
+  </script>
 {% endblock %}
 
