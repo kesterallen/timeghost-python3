@@ -14,11 +14,12 @@ body {
 
 a {
   text-decoration: none;
-  color: #0000F8;
+  color: #008CBA; /* blue */
 }
 
 a:hover {
-  text-decoration: underline;
+  text-decoration: none;
+  color: #0000ff;
 }
 
 a:active {
@@ -115,6 +116,35 @@ footer p {
   margin: 0;
   font-size: 0.9rem;
 }
+
+
+
+.button-link {
+  background-color: #008CBA; /* blue */
+  border: none; /* Remove default border */
+  color: white; /* White text */
+  padding: 8px 16px; /* Add space around the text */
+  text-align: center; /* Center the text */
+  text-decoration: none; /* Remove default underline */
+  display: inline-block; /* Allows padding and margins */
+  font-size: 16px; /* Increase font size */
+  margin: 4px 2px; /* Add some margin */
+  cursor: pointer; /* Change mouse cursor to a hand */
+  border-radius: 8px; /* Rounded corners */
+}
+
+/* Add hover effect for interactivity */
+.button-link:hover {
+  background-color: #0000ff;
+}
+
+
+
+
+
+
+
+
 
 /* Tablet Styles (768px and up) */
 @media (min-width: 768px) {

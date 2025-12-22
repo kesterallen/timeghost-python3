@@ -8,19 +8,21 @@
   {% if timeghost %}
     {{timeghost.factoid}}<br>
     <br>
-    <a title="{{timeghost.verbose_factoid}}" href="{{timeghost.permalink_url}}">Permalink</a><br>
   {% endif %}
-  <hr>
   {% if timeghost %}
-    <a href="/worst/{{timeghost.middle.url}}">Worst-case version of this Timeghost</a><br>
-    <a href="/random/{{timeghost.middle.url}}">Random version of this Timeghost</a><br>
+    <a class="button-link" href="/worst/{{timeghost.middle.url}}">Stop</a>
+    <!--<a class="button-link" href="/random/{{timeghost.middle.url}}">Random version of this Timeghost</a><br>-->
   {% endif %}
-  <a href="/worst/random">Worst-case random Timeghost</a><br>
-  <a href="/random/random">Random random Timeghost</a><br>
+  <!--<a class="button-link" href="/worst/random">Worst-case random Timeghost</a><br>-->
+  <a class="button-link" href="/random/random">Yikes</a>
+  <a class="button-link" href="/pick">Pick</a>
+  <br>
 {% endblock %}
 
 {% block sidebar_block %}
   {{timeghost.verbose_factoid}}
   <hr>
   This start of this timeghost's haunting was {{timeghost.start_of_haunting.strftime('%-d %B, %Y')}}.
+  <hr>
+  <a title="{{timeghost.verbose_factoid}}" href="{{timeghost.permalink_url}}">Permalink</a><br>
 {% endblock %}

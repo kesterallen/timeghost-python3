@@ -28,6 +28,10 @@ class Event:
         url = "".join([c for c in desc if c in ALLOWED])
         return url[:40]
 
+    @property
+    def datestr(self) -> str:
+        return self.date.strftime("%-d %B, %Y")
+
     def __lt__(self, other) -> bool:
         return self.date < other.date
 
@@ -120,17 +124,17 @@ class Timeghost:
     def verbose_factoid(self) -> str:
         if self.last.description == NOW_MARKER:
             last = "today"
-            last_date = dt.datetime.now(tz.tzlocal())
+            last_date = dt.datetime.now(tz.tzlocal()).strftime("%-d %B, %Y")
         else:
             last = f"the {self.last}"
-            last_date = self.last.date
+            last_date = self.last.datestr
 
         return (
-            f"The {self.middle} ({self.middle.date}) "
+            f"The {self.middle} ({self.middle.datestr}) "
             f"is closer ({self.first_gap_years:.1f} years) to "
-            f"the {self.first} ({self.first.date}) ({self.last_gap_years:.1f} years) than "
+            f"the {self.first} ({self.first.datestr}) ({self.last_gap_years:.1f} years) than "
             f"{last} ({last_date}) "
-            f"({self.is_valid()}, {self.tries} tries). "
+            #f"({self.is_valid()}, {self.tries} tries). "
         )
 
     @staticmethod
@@ -239,7 +243,7 @@ def load_specific_events(urls: list[str]) -> list[Event]:
 
 
 def load_events_and_make_timeghost(is_random=False, middle=None, is_now=True):
-    """ Make a timeghost from the list of events """
+    """Make a timeghost from the list of events"""
     events = load_events()
     try:
         tg = Timeghost.make(events, middle, is_now, is_random)
@@ -254,9 +258,10 @@ app = Flask(
     static_url_path="/static",
 )
 
+
 @app.route("/pick", methods=["GET", "POST"])
 def pick():
-    """ Pick a timeghost, or render a picked timeghost """
+    """Pick a timeghost, or render a picked timeghost"""
 
     # pick a timeghost
     if request.method == "GET":
@@ -270,7 +275,7 @@ def pick():
         url2 = request.form["event_middle"]
         print(request.form)
         first, middle = load_specific_events([url1, url2])
-        
+
         tg = Timeghost(first, middle, Event.now(), check=False)
         return render_template("timeghost.html", timeghost=tg)
 
@@ -342,17 +347,16 @@ def display_timeghost_arbitrary_random(event_url):
 
 @app.route("/<first_url>/<middle_url>/<last_url>")
 def display_timeghost_arbitrary_fully_specified(first_url, middle_url, last_url):
-    """ specify all  three events, don't check validity """
+    """specify all  three events, don't check validity"""
     events = load_specific_events([first_url, middle_url, last_url])
     tg = Timeghost(events[0], events[1], events[2], check=False)  # plain constructor
     return render_template("timeghost.html", timeghost=tg)
 
 
-
-
 @app.route("/")
 def display_timeghost_default():
     return display_timeghost_random_optimized()
+
 
 # TODO
 #
