@@ -2,21 +2,32 @@
 
 {% block main_block %}
   <form action="/pick" method="post">
-    <select name="event_first" id="event_first">
-      {% for event in events %}
-        <option value="{{event.url}}" data-date="{{event.date}}">{{event.description}} ({{event.date}})</option>
-      {% endfor %}
-    </select>
+    <div>
+      <label for="event_first">First Event:</label>
+      <select name="event_first" id="event_first">
+        <option hidden value="default">Select An Option</option>
+        {% for event in events %}
+          <option value="{{event.url}}" data-date="{{event.date}}">{{event.description}} ({{event.date}})</option>
+        {% endfor %}
+      </select>
+    </div>
 
-    <select name="event_middle" id="event_middle">
-      {% for event in events %}
-        <option value="{{event.url}}" data-date="{{event.date}}">{{event.description}} ({{event.date}})</option>
-      {% endfor %}
-    </select>
+    <div id="div_middle" hidden>
+      <label for="event_middle">Middle Event:</label>
+      <select name="event_middle" id="event_middle">
+        <option hidden value="default">Select An Option</option>
+        {% for event in events %}
+          <option value="{{event.url}}" data-date="{{event.date}}">{{event.description}} ({{event.date}})</option>
+        {% endfor %}
+      </select>
+    </div>
 
-    <input name="event-date" id="event-date" type="datetime-local">
+    <div>
+      <label for="event-date">Target Date:</label>
+      <input name="event-date" id="event-date" type="datetime-local">
+    </div>
 
-    <input type="submit" value="Make Timeghost"/>
+    <input type="submit" class="button-link" value="Make Timeghost"/>
   </form>
 {% endblock %}
 
@@ -26,15 +37,22 @@
 <!-- Filter invalid events in event2 when event1 is selected -->
 {% block bottom_block %}
   <script>
+    function isHidden(el) {
+      const style = window.getComputedStyle(el);
+      return style.display === 'none' || style.visibility === 'hidden';
+    }
+
     const eventFirst = document.querySelector("#event_first");
     const eventMiddle = document.querySelector("#event_middle");
+    const divMiddle = document.querySelector("#div_middle");
 
     eventFirst.addEventListener("change", (event) => {
       // Filter invalid events in second event select when an the first event is selected
+      divMiddle.style.display = isHidden(divMiddle) ? "inline" : "none";
+
       Array.from(eventMiddle.options).forEach(option => {
-        if (option.dataset.date > eventFirst.selectedOptions[0].dataset.date) {
-          option.disabled = true;
-        }
+        var isOutOfRange = option.dataset.date > eventFirst.selectedOptions[0].dataset.date;
+        option.disabled = isOutOfRange;
       });
 
     });

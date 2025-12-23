@@ -68,7 +68,7 @@ class Timeghost:
         self.tries = 1
         if check:
             if not self.is_valid():
-                raise TimeghostValidationError("Invalid Timeghost: {self}")
+                raise TimeghostValidationError(f"Invalid Timeghost: {self}")
 
     @property
     def first_gap(self) -> dt.timedelta:
@@ -104,9 +104,9 @@ class Timeghost:
         """String representation"""
         validity = "is valid" if self.is_valid() else "is not valid"
         return (
-            f"{self.middle} is closer to <br>"
-            f"({self.first_gap_years:.1f}) {self.first} than <br>"
-            f"({self.last_gap_years:.1f}) {self.last} <br>"
+            f"{self.middle} is closer to "
+            f"({self.first_gap_years:.1f}) {self.first} than "
+            f"({self.last_gap_years:.1f}) {self.last} "
             f"{validity}, {self.tries} trie(s)"
         )
 
@@ -168,7 +168,7 @@ class Timeghost:
             tg_events = lambda l: (first, middle, l)
         else:
             raise TimeghostCreationError(
-                "invalid Event specification: {first}, {middle}, {last}."
+                f"invalid Event specification: {first}, {middle}, {last}."
             )
 
         for event in events:
@@ -222,7 +222,9 @@ def load_events():
         reader = csv.DictReader(csvfile)
         events = []
         for row in reader:
-            event = Event(row["description"], parse(row["date"]))
+            description = row["description"]
+            date = parse(row["date"])
+            event = Event(description, date)
             events.append(event)
     return events
 
@@ -234,7 +236,7 @@ def load_specific_events(urls: list[str]) -> list[Event]:
     for url in urls:
         if url == NOW_MARKER:
             events.append(Event.now())
-            break
+            continue
         for event in all_events:
             if event.url == url:
                 events.append(event)
@@ -271,9 +273,9 @@ def pick():
 
     # render a picked timeghost
     if request.method == "POST":
+        print(request.form)
         url1 = request.form["event_first"]
         url2 = request.form["event_middle"]
-        print(request.form)
         first, middle = load_specific_events([url1, url2])
 
         tg = Timeghost(first, middle, Event.now(), check=False)
