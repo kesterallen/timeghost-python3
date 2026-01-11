@@ -1,21 +1,10 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block main_block %}
   <form action="/pick" method="post">
-    <div>
-      <label for="event_first">First Event:</label>
-      <select name="event_first" id="event_first">
-        <option hidden value="default">Select An Option</option>
-        {% for event in events %}
-          <option value="{{event.url}}" data-date="{{event.date}}">{{event.description}} ({{event.date}})</option>
-        {% endfor %}
-      </select>
-    </div>
-
-    <div id="div_middle" hidden>
-      <label for="event_middle">Middle Event:</label>
+    <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
       <select name="event_middle" id="event_middle">
-        <option hidden value="default">Select An Option</option>
+        <option hidden value="default">Pick a Middle Event</option>
         {% for event in events %}
           <option value="{{event.url}}" data-date="{{event.date}}">{{event.description}} ({{event.date}})</option>
         {% endfor %}
@@ -23,8 +12,17 @@
     </div>
 
     <div>
-      <label for="event-date">Target Date:</label>
-      <input name="event-date" id="event-date" type="datetime-local">
+      <label for="target_date">or a Target Date:</label>
+      <input name="target_date" id="target_date" type="date">
+    </div>
+
+    <div id="div_event_first" hidden>
+      <select name="event_first" id="event_first">
+        <option hidden value="default">Pick a First Event</option>
+        {% for event in events %}
+          <option value="{{event.url}}" data-date="{{event.date}}">{{event.description}} ({{event.date}})</option>
+        {% endfor %}
+      </select>
     </div>
 
     <input type="submit" class="button-link" value="Make Timeghost"/>
@@ -39,23 +37,96 @@
   <script>
     function isHidden(el) {
       const style = window.getComputedStyle(el);
-      return style.display === 'none' || style.visibility === 'hidden';
+      return style.display === "none" || style.visibility === "hidden";
     }
 
-    const eventFirst = document.querySelector("#event_first");
-    const eventMiddle = document.querySelector("#event_middle");
-    const divMiddle = document.querySelector("#div_middle");
+    function unhideEventFirst() {
+      // Unhide the middle div on first run:
+      const divEventFirst = document.querySelector("#div_event_first");
+      if (isHidden(divEventFirst)) {
+        divEventFirst.style.display = "inline";
+      }
+    }
 
-    eventFirst.addEventListener("change", (event) => {
-      // Filter invalid events in second event select when an the first event is selected
-      divMiddle.style.display = isHidden(divMiddle) ? "inline" : "none";
+    function isValidTimeghost(first, middle, last) {
+        // Timeghost validity: middle is closer to first than last
+        return Math.abs(middle - first) < Math.abs(last - middle);
+    }
 
-      Array.from(eventMiddle.options).forEach(option => {
-        var isOutOfRange = option.dataset.date > eventFirst.selectedOptions[0].dataset.date;
-        option.disabled = isOutOfRange;
+    /**
+      * For a list of events in a select element, e.g. event_first,
+      *   1) disable the events that aren't valid timeghosts (valid: the middle event is * closer to the first than the last), and
+      *   2) set the select element to most recent valid-timeghost event.
+      */
+    function filterEventsAndSelect(selectedDate, eventsId) {
+      const eventsElement = document.querySelector(eventsId); // the <select>
+      const events = [...eventsElement.options].filter(event => "date" in event.dataset); // the listbox options containing "date" info
+
+      const now = new Date();
+      events.forEach(event => {
+        const first = new Date(event.dataset.date);
+        const isValid = isValidTimeghost(first, selectedDate, now);
+
+        event.disabled = !isValid;
+        if (isValid) {
+          eventsElement.value = event.value;
+        }
       });
+    }
 
-    });
+    function selectEventForTargetDate(eventsId) {
+      const targetDateInput = document.querySelector("#target_date");
+      const selectedDate = new Date(targetDateInput.value);
+
+      const eventsElement = document.querySelector(eventsId); // the <select>
+      const events = [...eventsElement.options].filter(event => "date" in event.dataset); // the listbox options containing "date" info
+      events.forEach(event => {
+        const date = new Date(event.dataset.date);
+        if (selectedDate - date < 0) {
+          eventsElement.value = event.value;
+        }
+      });
+    }
+
+
+    /**
+      * Filter event_first's options based on the a date selection in the event_middle listbox
+      */
+    function addListenerSelect() {
+      const eventMiddle = document.querySelector("#event_middle");
+      eventMiddle.addEventListener("change", (changeEvent) => {
+        // Unhide the other event list:
+        unhideEventFirst()
+
+        // And filter it
+        const selectedDate = new Date(eventMiddle.selectedOptions[0].dataset.date);
+        filterEventsAndSelect(selectedDate, "#event_first");
+
+        // And update the manually-input date, just for fun
+        const targetDateInput = document.querySelector("#target_date");
+        targetDateInput.value = selectedDate.toLocaleDateString('sv-SE'); // yyyy-MM-dd
+      });
+    }
+
+    function addListenerDateInput() {
+      const targetDateInput = document.querySelector("#target_date");
+      targetDateInput.addEventListener("change", (changeEvent) => {
+        // Unhide the other event list:
+        unhideEventFirst()
+
+        const selectedDate = new Date(targetDateInput.value)
+        // filter both select elements, first for the "Pick a First Event" select
+        filterEventsAndSelect(selectedDate, "#event_first");
+
+        // And set the "Pick a Middle Event" select to the closest event to the
+        // time selected in the targetDateInput
+        selectEventForTargetDate("#event_middle");
+      });
+    }
+
+    addListenerSelect();
+    addListenerDateInput();
+
   </script>
 {% endblock %}
 

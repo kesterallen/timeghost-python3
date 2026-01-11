@@ -1,5 +1,6 @@
 import csv
 import datetime as dt
+import math
 from pathlib import Path
 import random
 from string import ascii_letters, digits
@@ -129,10 +130,15 @@ class Timeghost:
             last = f"the {self.last}"
             last_date = self.last.datestr
 
+        # Adjust precision until printed dates are different:
+        precision = 0
+        while f"{self.first_gap_years:.{precision}f}" ==  f"{self.last_gap_years:.{precision}f}":
+            precision += 1
+
         return (
             f"The {self.middle} ({self.middle.datestr}) "
-            f"is closer ({self.first_gap_years:.1f} years) to "
-            f"the {self.first} ({self.first.datestr}) ({self.last_gap_years:.1f} years) than "
+            f"is closer ({self.first_gap_years:.{precision}f} years) to "
+            f"the {self.first} ({self.first.datestr}) ({self.last_gap_years:.{precision}f} years) than "
             f"{last} ({last_date}) "
             #f"({self.is_valid()}, {self.tries} tries). "
         )
@@ -273,10 +279,9 @@ def pick():
 
     # render a picked timeghost
     if request.method == "POST":
-        print(request.form)
-        url1 = request.form["event_first"]
-        url2 = request.form["event_middle"]
-        first, middle = load_specific_events([url1, url2])
+        url_first = request.form["event_first"]
+        url_middle = request.form["event_middle"]
+        first, middle = load_specific_events([url_first, url_middle])
 
         tg = Timeghost(first, middle, Event.now(), check=False)
         return render_template("timeghost.html", timeghost=tg)
