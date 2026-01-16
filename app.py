@@ -11,6 +11,7 @@ from flask import Flask, render_template, request
 
 
 SECONDS_PER_YEAR = 31536000
+SECONDS_PER_DAY = 86400
 NUM_TRIES = 100
 
 ALLOWED = set(ascii_letters + digits + "-")
@@ -77,9 +78,15 @@ class Timeghost:
         return self.middle - self.first
 
     @property
-    def first_gap_years(self) -> dt.timedelta:
+    def first_gap_years(self) -> str:
         """Time difference between the middle and first event in years"""
-        return self.first_gap.total_seconds() / SECONDS_PER_YEAR
+        return f"{int(self.first_gap.total_seconds() // SECONDS_PER_YEAR)} years"
+
+    @property
+    def first_gap_years_and_days(self) -> str:
+        """Time difference between the middle and first event in years, days"""
+        years, seconds = divmod(self.first_gap.total_seconds(), SECONDS_PER_YEAR)
+        return f"{int(years)} years, {int(seconds // SECONDS_PER_DAY)} days"
 
     @property
     def last_gap(self) -> dt.timedelta:
@@ -89,7 +96,13 @@ class Timeghost:
     @property
     def last_gap_years(self) -> dt.timedelta:
         """Time difference between the last and middle event in years"""
-        return self.last_gap.total_seconds() / SECONDS_PER_YEAR
+        return f"{int(self.last_gap.total_seconds() // SECONDS_PER_YEAR)} years"
+
+    @property
+    def last_gap_years_and_days(self) -> tuple:
+        """Time difference between the last and middle event in years, days"""
+        years, seconds = divmod(self.last_gap.total_seconds(), SECONDS_PER_YEAR)
+        return f"{int(years)} years, {int(seconds // SECONDS_PER_DAY)} days"
 
     @property
     def permalink_url(self) -> str:
@@ -106,8 +119,8 @@ class Timeghost:
         validity = "is valid" if self.is_valid() else "is not valid"
         return (
             f"{self.middle} is closer to "
-            f"({self.first_gap_years:.1f}) {self.first} than "
-            f"({self.last_gap_years:.1f}) {self.last} "
+            f"({self.first_gap_years:.0f}) {self.first} than "
+            f"({self.last_gap_years:.0f}) {self.last} "
             f"{validity}, {self.tries} trie(s)"
         )
 
@@ -130,15 +143,18 @@ class Timeghost:
             last = f"the {self.last}"
             last_date = self.last.datestr
 
-        # Adjust precision until printed dates are different:
-        precision = 0
-        while f"{self.first_gap_years:.{precision}f}" ==  f"{self.last_gap_years:.{precision}f}":
-            precision += 1
+        first_gap_str = self.first_gap_years
+        last_gap_str = self.last_gap_years
+
+        if first_gap_str == last_gap_str:
+            first_gap_str = f"{self.first_gap_years_and_days}"
+            last_gap_str = f"{self.last_gap_years_and_days}"
 
         return (
             f"The {self.middle} ({self.middle.datestr}) "
-            f"is closer ({self.first_gap_years:.{precision}f} years) to "
-            f"the {self.first} ({self.first.datestr}) ({self.last_gap_years:.{precision}f} years) than "
+            f"is closer ({first_gap_str}) to "
+            f"the {self.first} ({self.first.datestr}) "
+            f"({last_gap_str}) than "
             f"{last} ({last_date}) "
             #f"({self.is_valid()}, {self.tries} tries). "
         )

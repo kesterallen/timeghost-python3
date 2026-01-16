@@ -118,6 +118,10 @@ footer p {
 }
 
 
+.side_by_side {
+  max-width: 50%;
+}
+
 
 .button-link {
   color: white; /* White text */

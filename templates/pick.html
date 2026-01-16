@@ -1,32 +1,27 @@
 {% extends "base.html" %}
 
 {% block main_block %}
-  <form action="/pick" method="post">
-    <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
-      <select name="event_middle" id="event_middle">
-        <option hidden value="default">Pick a Middle Event</option>
-        {% for event in events %}
-          <option value="{{event.url}}" data-date="{{event.date}}">{{event.description}} ({{event.date}})</option>
-        {% endfor %}
-      </select>
-    </div>
-
-    <div>
-      <label for="target_date">or a Target Date:</label>
-      <input name="target_date" id="target_date" type="date">
-    </div>
-
-    <div id="div_event_first" hidden>
-      <select name="event_first" id="event_first">
-        <option hidden value="default">Pick a First Event</option>
-        {% for event in events %}
-          <option value="{{event.url}}" data-date="{{event.date}}">{{event.description}} ({{event.date}})</option>
-        {% endfor %}
-      </select>
-    </div>
-
-    <input type="submit" class="button-link" value="Make Timeghost"/>
-  </form>
+<form action="/pick" method="post">
+  <div>
+    <select class="side_by_side" name="event_middle" id="event_middle">
+      <option hidden value="default">Pick a Middle Event</option>
+      {% for event in events %}
+        <option value="{{event.url}}" data-date="{{event.date}}">{{event.description}} ({{event.datestr}})</option>
+      {% endfor %}
+    </select>
+    <label for="target_date">or a Target Date:</label>
+    <input class="side_by_side" name="target_date" id="target_date" type="date">
+  </div>
+  <div id="div_event_first" hidden>
+    <select name="event_first" id="event_first">
+      <option hidden value="default">Pick a First Event</option>
+      {% for event in events %}
+        <option value="{{event.url}}" data-date="{{event.date}}">{{event.description}} ({{event.datestr}})</option>
+      {% endfor %}
+    </select>
+  </div>
+  <input type="submit" class="button-link" value="Make Timeghost"/>
+</form>
 {% endblock %}
 
 {% block sidebar_block %}
@@ -49,8 +44,10 @@
     }
 
     function isValidTimeghost(first, middle, last) {
-        // Timeghost validity: middle is closer to first than last
-        return Math.abs(middle - first) < Math.abs(last - middle);
+      // Timeghost validity: middle is closer to first than last
+      const firstGap = middle - first;
+      const lastGap = last - middle;
+      return firstGap < lastGap && firstGap > 0;
     }
 
     /**
@@ -68,6 +65,7 @@
         const isValid = isValidTimeghost(first, selectedDate, now);
 
         event.disabled = !isValid;
+        // TODO: remove or un-remove would be better, but not sure how to un-remove (to make a second selection work)
         if (isValid) {
           eventsElement.value = event.value;
         }
