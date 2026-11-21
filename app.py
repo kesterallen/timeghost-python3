@@ -318,7 +318,7 @@ def display_timeghost_random_optimized():
 def json_random():
     tg = load_events_and_make_timeghost()
     return jsonify({
-        "factoid": tg.factoid,
+        "factoid": tg.verbose_factoid,
         "url": tg.permalink_url,
     })
 
