@@ -7,7 +7,7 @@ from string import ascii_letters, digits
 
 from dateutil import tz
 from dateutil.parser import parse
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 
 
 SECONDS_PER_YEAR = 31536000
@@ -314,6 +314,13 @@ def display_timeghost_random_optimized():
     tg = load_events_and_make_timeghost()
     return render_template("timeghost.html", timeghost=tg)
 
+@app.route("/worst/random/json")
+def json_random():
+    tg = load_events_and_make_timeghost()
+    return jsonify({
+        "factoid": tg.factoid,
+        "url": tg.permalink_url,
+    })
 
 @app.route("/random/random")
 def display_timeghost_random_random():
