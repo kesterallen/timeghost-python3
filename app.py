@@ -119,8 +119,8 @@ class Timeghost:
         validity = "is valid" if self.is_valid() else "is not valid"
         return (
             f"{self.middle} is closer to "
-            f"({self.first_gap_years:.0f}) {self.first} than "
-            f"({self.last_gap_years:.0f}) {self.last} "
+            f"({self.first_gap_years}) {self.first} than "
+            f"({self.last_gap_years}) {self.last} "
             f"{validity}, {self.tries} trie(s)"
         )
 
